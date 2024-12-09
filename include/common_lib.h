@@ -14,13 +14,13 @@
 #include <eigen_conversions/eigen_msg.h>
 #include <cv_bridge/cv_bridge.h>
 #include <opencv2/opencv.hpp>
-#include <sophus/se3.h>
 #include <boost/shared_ptr.hpp>
 #include <unordered_map>
+#include "li2sup/Manifold.hpp"
+
 
 using namespace std;
 using namespace Eigen;
-using namespace Sophus;
 
 // #define DEBUG_PRINT
 #define USE_ikdtree

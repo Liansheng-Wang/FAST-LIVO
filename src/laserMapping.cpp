@@ -1737,9 +1737,9 @@ int main(int argc, char** argv)
 
         if(pose_output_en)
         {
-            SE3 T_cam_world = lidar_selector->new_frame_->T_f_w_;
+            LI2Sup::SE3 T_cam_world = lidar_selector->new_frame_->T_f_w_;
             Eigen::Vector3d t = T_cam_world.translation();  
-            Eigen::Quaterniond q(T_cam_world.rotation_matrix()); 
+            Eigen::Quaterniond q(T_cam_world.R()); 
             fout_tum << std::fixed << std::setprecision(6)
                     << LidarMeasures.lidar_beg_time << " "
                     << t.x() << " " << t.y() << " " << t.z() << " "

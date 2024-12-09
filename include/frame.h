@@ -43,7 +43,7 @@ public:
   int                           id_;                    //!< Unique id of the frame.
   // double                        timestamp_;             //!< Timestamp of when the image was recorded.
   vk::AbstractCamera*           cam_;                   //!< Camera model.
-  SE3                           T_f_w_;                 //!< Transform (f)rame from (w)orld.
+  LI2Sup::SE3                   T_f_w_;                 //!< Transform (f)rame from (w)orld.
   Matrix<double, 6, 6>          Cov_;                   //!< Covariance.
   ImgPyr                        img_pyr_;               //!< Image Pyramid.
   Features                      fts_;                   //!< List of features in the image.
@@ -112,8 +112,8 @@ public:
       const Vector3d& xyz_in_world,
       const Vector3d& xyz_in_f,
       Matrix<double,2,6>& J,
-      SE3& Tbc,
-      SE3& T_ref_w,
+      LI2Sup::SE3& Tbc,
+      LI2Sup::SE3& T_ref_w,
       double fx)
   {
     //Vector3d xyz_in_imu = Tbc * xyz_in_world;
@@ -161,7 +161,7 @@ public:
     J2(2,4) = -x_in_world;       
     J2(2,5) = 0.0;   
     
-    J = J1 * T_ref_w.rotation_matrix() * J2;// * J2;   
+    J = J1 * T_ref_w.R_ * J2;// * J2;   
   }
 
   inline static void jacobian_xyz2uv(

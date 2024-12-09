@@ -102,7 +102,7 @@ void Point::initNormal()
   assert(!obs_.empty());
   const FeaturePtr ftr = obs_.back();
   assert(ftr->frame != nullptr);
-  normal_ = ftr->frame->T_f_w_.rotation_matrix().transpose()*(-ftr->f);
+  normal_ = ftr->frame->T_f_w_.R().transpose()*(-ftr->f);
   normal_information_ = DiagonalMatrix<double,3,3>(pow(20/(pos_-ftr->frame->pos()).norm(),2), 1.0, 1.0);
   normal_set_ = true;
 }
@@ -116,8 +116,8 @@ bool Point::getClosePose(const FramePtr& new_frame, FeaturePtr& ftr) const
   double min_cos_angle = 3.14;
   for(auto it=obs_.begin(), ite=obs_.end(); it!=ite; ++it)
   {
-    SE3 delta_pose = (*it)->T_f_w_* new_frame->T_f_w_.inverse(); //dir.normalize();
-    double delta_theta = (delta_pose.rotation_matrix().trace() > 3.0 - 1e-6) ? 0.0 : std::acos(0.5 * (delta_pose.rotation_matrix().trace() - 1));            
+    LI2Sup::SE3 delta_pose = (*it)->T_f_w_* new_frame->T_f_w_.inverse(); //dir.normalize();
+    double delta_theta = (delta_pose.R().trace() > 3.0 - 1e-6) ? 0.0 : std::acos(0.5 * (delta_pose.R().trace() - 1));            
     double delta_p = delta_pose.translation().norm();
     double p_in_ref = ((*it)->T_f_w_ * pos_).norm();
     if(delta_p > p_in_ref*0.8) continue;
@@ -264,7 +264,7 @@ void Point::optimize(const size_t n_iter)
     {
       Matrix23d J;
       const Vector3d p_in_f((*it)->frame->T_f_w_ * pos_);
-      Point::jacobian_xyz2uv(p_in_f, (*it)->frame->T_f_w_.rotation_matrix(), J);
+      Point::jacobian_xyz2uv(p_in_f, (*it)->frame->T_f_w_.R(), J);
       const Vector2d e(vk::project2d((*it)->f) - vk::project2d(p_in_f));
 
       if((*it)->type == Feature::EDGELET)

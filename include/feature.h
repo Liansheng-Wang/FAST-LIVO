@@ -45,9 +45,9 @@ struct Feature
   float score;
   float error;
   // Vector2d grad_cur_;   //!< edgelete grad direction in cur frame 
-  SE3 T_f_w_;
+  LI2Sup::SE3 T_f_w_;
   // float* patch;
-  Feature(const Vector2d& _px, const Vector3d& _f, const SE3& _T_f_w, const float &_score, int _level) :
+  Feature(const Vector2d& _px, const Vector3d& _f, const LI2Sup::SE3& _T_f_w, const float &_score, int _level) :
     type(CORNER),
     px(_px),
     f(_f),

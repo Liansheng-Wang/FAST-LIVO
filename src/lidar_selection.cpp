@@ -234,7 +234,7 @@ void LidarSelector::getWarpMatrixAffine(
     const Vector2d& px_ref,
     const Vector3d& f_ref,
     const double depth_ref,
-    const SE3& T_cur_ref,
+    const LI2Sup::SE3& T_cur_ref,
     const int level_ref,    // the corresponding pyrimid level of px_ref
     const int pyramid_level,
     const int halfpatch_size,
@@ -907,7 +907,7 @@ void LidarSelector::updateFrameState(StatesGroup state)
     V3D Pwi(state.pos_end);
     Rcw = Rci * Rwi.transpose();
     Pcw = -Rci*Rwi.transpose()*Pwi + Pci;
-    new_frame_->T_f_w_ = SE3(Rcw, Pcw);
+    new_frame_->T_f_w_ = LI2Sup::SE3(Rcw, Pcw);
 }
 
 void LidarSelector::addObservation(cv::Mat img)
@@ -920,7 +920,7 @@ void LidarSelector::addObservation(cv::Mat img)
         PointPtr pt = sub_sparse_map->voxel_points[i];
         if(pt==nullptr) continue;
         V2D pc(new_frame_->w2c(pt->pos_));
-        SE3 pose_cur = new_frame_->T_f_w_;
+        LI2Sup::SE3 pose_cur = new_frame_->T_f_w_;
         bool add_flag = false;
         // if (sub_sparse_map->errors[i]<= 100*patch_size_total && sub_sparse_map->errors[i]>0)
         {
@@ -930,10 +930,10 @@ void LidarSelector::addObservation(cv::Mat img)
             // if(new_frame_->id_ >= last_feature->id_ + 20) add_flag = true;
 
             // Step 2: delta_pose
-            SE3 pose_ref = last_feature->T_f_w_;
-            SE3 delta_pose = pose_ref * pose_cur.inverse();
+            LI2Sup::SE3 pose_ref = last_feature->T_f_w_;
+            LI2Sup::SE3 delta_pose = pose_ref * pose_cur.inverse();
             double delta_p = delta_pose.translation().norm();
-            double delta_theta = (delta_pose.rotation_matrix().trace() > 3.0 - 1e-6) ? 0.0 : std::acos(0.5 * (delta_pose.rotation_matrix().trace() - 1));            
+            double delta_theta = (delta_pose.R().trace() > 3.0 - 1e-6) ? 0.0 : std::acos(0.5 * (delta_pose.R().trace() - 1));            
             if(delta_p > 0.5 || delta_theta > 10) add_flag = true;
 
             // Step 3: pixel distance

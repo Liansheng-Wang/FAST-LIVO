@@ -14,6 +14,7 @@
 #include <pcl/point_types.h>
 #include <pcl/filters/voxel_grid.h>
 #include <set>
+#include <omp.h>
 
 namespace lidar_selection {
 
@@ -83,7 +84,7 @@ class LidarSelector {
       const Vector2d& px_ref,
       const Vector3d& f_ref,
       const double depth_ref,
-      const SE3& T_cur_ref,
+      const LI2Sup::SE3& T_cur_ref,
       const int level_ref,    // px_ref对应特征点的金字塔层级
       const int pyramid_level,
       const int halfpatch_size,
